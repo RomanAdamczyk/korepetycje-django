@@ -1,0 +1,16 @@
+[
+    {
+        "model": "matematyka.tasks",
+        "pk": 1,
+        "fields": {
+            "content": "('Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych. Liczba \( \left( \sqrt{32} - \sqrt{2} \right)^2 \) jest równa",
+            "points": 1,
+            "category": [1],
+            "task_level": 1,
+            "exam_date": "2025-05-06",
+            "source": "CKE",
+            "hint": "wyciągnij przed pierwiastek",
+            "sub_number":"1",
+            "tasl_type": 1}
+        }
+]

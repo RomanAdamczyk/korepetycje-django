@@ -1,0 +1,59 @@
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Editor directories
+.vscode/
+.idea/
+
+# Environment variables / config
+.env
+.env.*
+
+# Pytest cache
+.pytest_cache/
+
+# Migrations (opcjonalnie — tylko jeśli generowane automatycznie)
+**/migrations/*.py
+**/migrations/__pycache__/
+
+# SQLite (jeśli używasz do testów)
+*.sqlite3
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+
+# MyPy / Pylint / Bandit
+.mypy_cache/
+.pylint.d/
+.bandit/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# pytest-django
+.testmondata
+.tox/
+.db_test.sqlite3
+
+# Coverage reports
+.coverage
+coverage.xml
+htmlcov/

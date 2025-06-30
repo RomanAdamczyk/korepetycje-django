@@ -51,58 +51,20 @@ class CategorySerializer(serializers.ModelSerializer):
     def get_tasks(self, obj):
         return TaskSerializer(obj.tasks.all(), many=True).data
 
-class IssueSerializer(serializers.ModelSerializer):
-    task = TaskSerializer(read_only=True)
-
-    class Meta:
-        model = Issue
-        fields = ['id', 'task']
-
-class UserProfileSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-
-    class Meta:
-        model = UserProfile
-        fields = ['id', 'user', 'username_for_admin']
-
-class AssignedTaskSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    task = TaskSerializer(read_only=True)
-    task_id = serializers.PrimaryKeyRelatedField(
-        queryset=Task.objects.all(), write_only=True, source='task'
-    )    
-
-    class Meta:
-        model = AssignedTask
-        fields = ['id', 'user', 'task','task_id', 'assigned_date', 'deadline']
-
 class VariableSerializer(serializers.ModelSerializer):
     class Meta:
         model = Variable
         fields = ['id', 'name', 'value', 'description', 'min_value', 'max_value', 'step', 'choices', 'original_value']
 
 class UsedVariableSerializer(serializers.ModelSerializer):
-    variable = VariableSerializer(read_only=True)
-    issue = IssueSerializer(read_only=True)
 
     class Meta:
         model = UsedVariable
-        fields = ['id', 'issue', 'variable', 'task'] 
+        fields = ['id', 'variable_name','variable_value'] 
 
-class AnswerOptionSerializer(serializers.ModelSerializer):
+class IssueSerializer(serializers.ModelSerializer):
     task = TaskSerializer(read_only=True)
-    issue = IssueSerializer(read_only=True)
-    
+    used_variables = UsedVariableSerializer(many=True, read_only=True)
     class Meta:
-        model = AnswerOption
-        fields = ['id', 'task', 'content', 'is_correct']
-
-class UserAnswerSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    task = TaskSerializer(read_only=True)
-    answer_option = AnswerOptionSerializer(read_only=True)
-    issue = IssueSerializer(read_only=True)
-
-    class Meta:
-        model = UserAnswer
-        fields = ['id', 'user', 'task', 'issue', 'answer_option', 'is_correct', 'answer_date', 'used_hint']
+        model = Issue
+        fields = ['id', 'task', 'used_variables']

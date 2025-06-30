@@ -30,26 +30,38 @@ Zadania z kategorii {{ category.name }}
         </div>
         <div class="col-lg-2">
             <div class="list-group-item list-group-item-action short-content text-black">
-            {{ task.exam_date }}
-        </div></div>
+                {{ task.exam_date }}
+            </div>
+        </div>
         <div class="col-lg-1">
             <div class="list-group-item list-group-item-action short-content text-black">
-            {{ task.source }}
-        </div></div>
+                {{ task.source }}
+            </div>
+        </div>
         <div class="col-lg-2">
             <div class="list-group-item list-group-item-action short-content text-black">
-            zad {{ task.sub_number }}
-        </div></div>
+                zad {{ task.sub_number }}
+            </div>
+        </div>
         <div class="col-lg-1">
             <div class="list-group-item list-group-item-action short-content text-black">
-            {{ task.points }} pkt
-        </div></div>
+                {{ task.points }} pkt
+            </div>
+        </div>
         <div class="col-lg-2">
             <div class="list-group-item list-group-item-action short-content text-black">
-            {{ task.task_level.school_level }} kl.{{ task.task_level.class_number }}
-        </div></div>
+                {{ task.task_level.school_level }} kl.{{ task.task_level.class_number }}
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div class="list-group-item list-group-item-action short-content text-black">
+                <form action="{% url 'start_issue_oryginal_varables' task.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Rozpocznij zadanie</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
 
-{% endblock %}
+    {% endblock %}

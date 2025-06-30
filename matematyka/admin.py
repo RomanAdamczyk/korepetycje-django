@@ -38,20 +38,20 @@ class AssignedTaskAdmin(admin.ModelAdmin):
     list_filter = ['assigned_date', 'deadline']
 
 class VariableAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'min_value', 'max_value']
+    list_display = ['id', 'name', 'min_value', 'max_value','step','choices', 'oryginal_value']
     search_fields = ['name']
     list_filter = ['min_value', 'max_value']
 
 class AdditionalVariableAdmin(admin.ModelAdmin):
-    list_display = ['id', 'task', 'name', 'formula']
+    list_display = ['id', 'task', 'name', 'formula', 'save_result']
 
 class UsedVariableAdmin(admin.ModelAdmin):
-    list_display = ['id', 'variable', 'issue']
-    search_fields = ['variable__name', 'issue__task__content']
+    list_display = ['id', 'variable', 'issue', 'variable_name', 'variable_value']
+    search_fields = ['variable__variable_name', 'issue__task__content']
     list_filter = ['issue']
 
 class AnswerOptionAdmin(admin.ModelAdmin):
-    list_display = ['id', 'task', 'issue','content', 'is_correct']
+    list_display = ['id', 'task','content', 'is_correct']
     search_fields = ['task__content', 'content']
     list_filter = ['is_correct']
 

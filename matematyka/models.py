@@ -179,11 +179,14 @@ class AdditionalVariable(models.Model):
     Attributes:
         task (Task): The task to which the additional variable belongs.
         name (str): The name of the additional variable.
-        formula (str): The formula used to compute the additional variable.'''
+        formula (str): The formula used to compute the additional variable.
+        save_result (bool): Indicates if the result of the formula should be saved to UsedVariable (solutions not).
+        '''
     
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='additional_variables')
     name = models.CharField(max_length=100)  # np. 'potega', 'roznica'
     formula = models.CharField(max_length=200, null=True, blank=True)  # np. 'liczba1 ** liczba2'
+    save_result = models.BooleanField(default=False)  
 
     def __str__(self):
         return f"AdditionalVariable {self.name} for task {self.task.id}: {self.formula}"
@@ -201,10 +204,12 @@ class UsedVariable(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='used_variables')
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='used_variables')
     variable = models.ForeignKey(Variable, on_delete=models.CASCADE, related_name='used_variables', null=True, blank=True)
-    variable_value = models.CharField(max_length=50, null=True, blank=True)
+    variable_name = models.CharField(max_length=100)
+    variable_value = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"Variable {self.variable.name} for Task {self.task.id}"
+        variable_name = self.variable.name if self.variable else "(no variable)"
+        return f"Variable {variable_name} for Task {self.task.id}"
     
 class AnswerOption(models.Model):
     '''
@@ -216,7 +221,6 @@ class AnswerOption(models.Model):
         is_correct (bool): Indicates if this answer option is correct.'''
     
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='answer_options')
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='answer_options', null=True, blank=True)
     content = models.TextField()
     is_correct = models.BooleanField(default=False)
 

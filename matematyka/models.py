@@ -23,7 +23,7 @@ class TaskGroup(models.Model):
     shared_content = models.CharField(max_length=100, unique=True)
     
     def __str__(self):
-        return self.name
+        return self.shared_content
     
 class TaskLevel(models.Model):
     '''
@@ -43,8 +43,10 @@ class TaskLevel(models.Model):
         # verbose_name = "Poziom zadania"
         # verbose_name_plural = "Poziomy zadań"
 
-    def __str__(self):
-        return f"{self.exam_level}  {self.school_level}, {self.class_number}" 
+def __str__(self):
+    parts = filter(None, [self.exam_level, self.school_level, f"Klasa {self.class_number}" if self.class_number else None])
+    return " - ".join(parts)
+
 
 class TaskType(models.Model):
     '''
@@ -153,7 +155,7 @@ class Variable(models.Model):
     Attributes:
         task (Task): The task to which the variable belongs.
         name (str): The name of the variable.
-        oryginal_value (float): The value of the variable.
+        original_value (float): The value of the variable.
         choices (dict): Possible choices for the variable, stored as a dictionary (JSONField).
         min_value (float): Minimum value for the variable.
         max_value (float): Maximum value for the variable.
@@ -161,7 +163,7 @@ class Variable(models.Model):
 
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='variables', null=True, blank=True)
     name = models.CharField(max_length=100)
-    oryginal_value = models.CharField(max_length=100)
+    original_value = models.CharField(max_length=100)
     choices = models.JSONField(null=True, blank=True)
     min_value = models.FloatField(null=True, blank=True)
     max_value = models.FloatField(null=True, blank=True)
@@ -171,7 +173,7 @@ class Variable(models.Model):
         unique_together = ('task', 'name')
 
     def __str__(self):
-        return f"Variable {self.name} with value {self.oryginal_value}"
+        return f"Variable {self.name} with value {self.original_value}"
 
 class AdditionalVariable(models.Model):
     '''Model representing an additional computed variable for a task.
@@ -225,7 +227,7 @@ class AnswerOption(models.Model):
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Option for Task {self.task.content}: {self.content}..."
+        return f"Option for Task {self.task.id}: {self.content[:30]}..."
 
 class UserAnswer(models.Model):
     '''
@@ -244,4 +246,4 @@ class UserAnswer(models.Model):
     answer_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Answer by User {self.user.first_name} for Task {self.issue.task.id}"
+        return f"Answer by User {self.user.first_name} for Issue {self.issue.task.id}"

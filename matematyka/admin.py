@@ -38,7 +38,7 @@ class AssignedTaskAdmin(admin.ModelAdmin):
     list_filter = ['assigned_date', 'deadline']
 
 class VariableAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'min_value', 'max_value','step','choices', 'oryginal_value']
+    list_display = ['id', 'name', 'min_value', 'max_value','step','choices', 'original_value']
     search_fields = ['name']
     list_filter = ['min_value', 'max_value']
 

@@ -13,7 +13,7 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     )
     serializer_class = CategorySerializer
 
-class StartIssueOryginalVarables(APIView):
+class StartIssueOriginalVarables(APIView):
 
     def post(self, request, task_id):
         try:
@@ -29,9 +29,9 @@ class StartIssueOryginalVarables(APIView):
 
         for variable in variables:
             try:
-                value = float(variable.oryginal_value)
+                value = float(variable.original_value)
             except ValueError:
-                value = variable.oryginal_value
+                value = variable.original_value
 
             value_map[variable.name] = value
             

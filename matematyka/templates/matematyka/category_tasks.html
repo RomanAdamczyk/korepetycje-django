@@ -55,7 +55,7 @@ Zadania z kategorii {{ category.name }}
         </div>
         <div class="col-lg-1">
             <div class="list-group-item list-group-item-action short-content text-black">
-                <form action="{% url 'start_issue_oryginal_varables' task.id %}" method="post">
+                <form action="{% url 'start_issue_original_varables' task.id %}" method="post">
                     {% csrf_token %}
                     <button type="submit">Rozpocznij zadanie</button>
                 </form>

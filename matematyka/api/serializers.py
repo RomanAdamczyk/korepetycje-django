@@ -65,6 +65,15 @@ class UsedVariableSerializer(serializers.ModelSerializer):
 class IssueSerializer(serializers.ModelSerializer):
     task = TaskSerializer(read_only=True)
     used_variables = UsedVariableSerializer(many=True, read_only=True)
+    answer_options = serializers.SerializerMethodField()
     class Meta:
         model = Issue
-        fields = ['id', 'task', 'used_variables']
+        fields = ['id', 'task', 'used_variables', 'answer_options']
+
+    def get_answer_options(self, obj):
+        return getattr(obj, 'answer_options', [])
+    
+class AnswerOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnswerOption
+        fields = ['content', 'is_correct']

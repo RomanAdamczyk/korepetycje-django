@@ -43,7 +43,7 @@ class VariableAdmin(admin.ModelAdmin):
     list_filter = ['min_value', 'max_value']
 
 class AdditionalVariableAdmin(admin.ModelAdmin):
-    list_display = ['id', 'task', 'name', 'formula', 'save_result']
+    list_display = ['id', 'task__id', 'name', 'formula', 'save_result']
 
 class UsedVariableAdmin(admin.ModelAdmin):
     list_display = ['id', 'variable', 'issue', 'variable_name', 'variable_value']
@@ -51,7 +51,7 @@ class UsedVariableAdmin(admin.ModelAdmin):
     list_filter = ['issue']
 
 class AnswerOptionAdmin(admin.ModelAdmin):
-    list_display = ['id', 'task','content', 'is_correct']
+    list_display = ['id', 'task__id','content', 'is_correct']
     search_fields = ['task__content', 'content']
     list_filter = ['is_correct']
 

@@ -7,18 +7,9 @@ from rest_framework import status
 from ..models import Category, Task, Variable, AdditionalVariable, Issue, UsedVariable, AnswerOption
 from .serializers import CategorySerializer, IssueSerializer
 
-import math
 import random
 
-# Dozwolone funkcje matematyczne do użycia w eval
-allowed_functions = {
-    "sqrt": math.sqrt,
-    "log": math.log,
-    "sin": math.sin,
-    "cos": math.cos,
-    "abs": abs
-}
-
+from sympy import sympify, N
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.annotate(tasks_count=Count('tasks')).prefetch_related(
@@ -61,38 +52,45 @@ class StartIssueOriginalVarables(APIView):
         additional_variables = AdditionalVariable.objects.filter(task=task)
 
         for add_var in additional_variables:
-            try:
-                result = eval(add_var.formula, allowed_functions, value_map)
-            except Exception as e:
-                print(f"Błąd w obliczaniu {add_var.name}: {e}")
-                continue
-
-            value_map[add_var.name] = result
-
+            expr = sympify(add_var.formula)
+            evaluated = expr.subs(value_map)
+            numeric_result = round(float(N(evaluated)),4)  
+            
+            value_map[add_var.name] = numeric_result
+            
             if add_var.save_result:
                 UsedVariable.objects.create(
                     task=task,
                     issue=issue,
                     variable=None,
                     variable_name=add_var.name,
-                    variable_value=str(result)
+                    variable_value=str(numeric_result)
                 )
-            
-            else:
-                solutions_map[add_var.name] = round(result,4)
+            else:           
+                solutions_map[add_var.name] = {
+                    "symbolic": str(expr),
+                    "numeric": numeric_result
+                }
 
-        print("Rozwiązania:", solutions_map)        
         answer_options_db = AnswerOption.objects.filter(task=task)
 
         answer_options = []
+
         for opt in answer_options_db:
-            value = solutions_map.get(opt.content)
-            if value is not None:
+            solution = solutions_map.get(opt.content)
+            if solution:
+                if opt.display_format == 'symbolic':
+                    content = solution['symbolic']
+                elif opt.display_format == 'numeric':
+                    content = str(solution['numeric'])
+                else:
+                    print("Nieznany format odpowiedzi:", opt.display_format)
+
                 answer_options.append({
-                    'content': str(value),
-                    'is_correct': opt.is_correct
-                })
-        
+                    'content': content,
+                    'is_correct': opt.is_correct,
+                    'format': opt.display_format
+                })        
         serializer = IssueSerializer(issue)
         data = serializer.data
         random.shuffle(answer_options)

@@ -1,3 +1,8 @@
+DISPLAY_FORMATS = [
+    ('symbolic', 'Symboliczna'),     # np. sqrt(2), 5**12
+    ('numeric', 'Liczbowa'),         # np. 1.41, 244140625
+]
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -225,6 +230,7 @@ class AnswerOption(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='answer_options')
     content = models.TextField()
     is_correct = models.BooleanField(default=False)
+    display_format = models.CharField(max_length=20, choices=DISPLAY_FORMATS, default='numeric')
 
     def __str__(self):
         return f"Option for Task {self.task.id}: {self.content[:30]}..."

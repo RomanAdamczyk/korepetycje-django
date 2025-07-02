@@ -76,4 +76,4 @@ class IssueSerializer(serializers.ModelSerializer):
 class AnswerOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnswerOption
-        fields = ['content', 'is_correct']
+        fields = ['content', 'is_correct', 'display_format']

@@ -51,7 +51,7 @@ class UsedVariableAdmin(admin.ModelAdmin):
     list_filter = ['issue']
 
 class AnswerOptionAdmin(admin.ModelAdmin):
-    list_display = ['id', 'task__id','content', 'is_correct']
+    list_display = ['id', 'task__id','content', 'is_correct', 'display_format']
     search_fields = ['task__content', 'content']
     list_filter = ['is_correct']
 

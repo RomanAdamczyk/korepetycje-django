@@ -20,7 +20,7 @@
         };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-    
+
     <link rel="stylesheet" href="{% static 'matematyka/css/style.css' %}">
 
 </head>
@@ -32,7 +32,7 @@
         <div class="container">
             <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                 <div class="text-end">
-    
+
                 </div>
             </div>
         </div>
@@ -41,11 +41,11 @@
     <section class="container-fluid">
 
 
-            <div class="row justify-content-center">
-                <div class="col-lg-8 col-sm-12">
-                    {% block content %}{% endblock %}
-                </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-sm-12">
+                {% block content %}{% endblock %}
             </div>
+        </div>
         </main>
     </section>
 
@@ -60,6 +60,13 @@
             }
         });
     </script>
+    <script>
+        window.addEventListener('load', () => {
+            if (window.MathJax) {
+                MathJax.typeset();
+            }
+        });
+    </script>   
 
 
 </body>

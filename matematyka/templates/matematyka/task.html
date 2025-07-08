@@ -1,10 +1,72 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zadanie</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .section { margin-bottom: 20px; }
+        .section h2 { margin-bottom: 10px; }
+        ul { padding-left: 20px; }
+    </style>
+</head>
+<body>
 
-<script>
-fetch('http://127.0.0.1:8000/api/tasks/1/start_original_variables/', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-</script>
+    <h1>Rozwiązywanie zadania</h1>
+
+    <div id="issue-container">
+        <div class="section">
+            <h2>Treść zadania</h2>
+            <div id="task-content">Ładowanie...</div>
+        </div>
+
+        <div class="section">
+            <h2>Wykorzystane zmienne</h2>
+            <ul id="used-variables"></ul>
+        </div>
+
+        <div class="section">
+            <h2>Odpowiedzi</h2>
+            <ul id="answer-options"></ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const issueId = {{ issue.id }};
+            const taskContentDiv = document.getElementById('task-content');
+            const usedVariablesList = document.getElementById('used-variables');
+            const answerOptionsList = document.getElementById('answer-options');
+
+            fetch(`/api/tasks/${issueId}/`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Błąd ładowania danych");
+                    return response.json();
+                })
+                .then(data => {
+                    // 1. Zadanie
+                    taskContentDiv.innerText = data.task.content || "Brak treści zadania.";
+
+                    // 2. Zmienne
+                    data.used_variables.forEach(uv => {
+                        const li = document.createElement('li');
+                        li.textContent = `${uv.variable_name} = ${uv.variable_value}`;
+                        usedVariablesList.appendChild(li);
+                    });
+
+                    // 3. Odpowiedzi
+                    data.answer_options.forEach(opt => {
+                        const li = document.createElement('li');
+                        li.textContent = `${opt.content} (${opt.format})`;
+                        answerOptionsList.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    taskContentDiv.innerText = "Nie udało się załadować danych.";
+                    console.error(error);
+                });
+        });
+    </script>
+
+</body>
+</html>

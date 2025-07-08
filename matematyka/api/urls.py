@@ -8,6 +8,7 @@ router.register(r'categories', views.CategoryViewSet, basename='category')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('api/tasks/<int:pk>/', views.IssueDetailAPI.as_view(), name='issue-detail'),
     path('tasks/<int:task_id>/start_original_variables/', views.StartIssueOriginalVarables.as_view(), name='start_issue_original_varables'),
     path('api-auth/', include('rest_framework.urls')),
 ]

@@ -1,6 +1,7 @@
 import requests
-from django.views.generic import TemplateView
-from .models import Task
+from django.shortcuts import render
+from django.views.generic import TemplateView, DetailView
+from .models import Task, Issue
 
 class CategoryListView(TemplateView):
     template_name = 'matematyka/categories.html'
@@ -29,3 +30,12 @@ class CategoryTasksView(TemplateView):
             context['tasks'] = []
     
         return context
+
+# class IssueDetailView(DetailView):
+#     model = Issue
+#     template_name = 'matematyka/task.html'
+#     context_object_name = 'issue'
+
+def start_task_view(request, issue_id):
+    issue = Issue.objects.get(id=issue_id)
+    return render(request, 'matematyka/task.html', {'issue': issue})

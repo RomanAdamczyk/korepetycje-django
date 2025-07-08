@@ -3,6 +3,8 @@ from django.db.models import Count, Prefetch
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import generics
+from django.shortcuts import redirect
 
 from ..models import Category, Task, Variable, AdditionalVariable, Issue, UsedVariable, AnswerOption
 from .serializers import CategorySerializer, IssueSerializer
@@ -95,4 +97,10 @@ class StartIssueOriginalVarables(APIView):
         data = serializer.data
         random.shuffle(answer_options)
         data['answer_options'] = answer_options
-        return Response(data, status=status.HTTP_201_CREATED)
+        # return Response(data, status=status.HTTP_201_CREATED)
+        return redirect('start-task', issue_id=issue.id)
+
+    
+class IssueDetailAPI(generics.RetrieveAPIView):
+    queryset = Issue.objects.all()
+    serializer_class = IssueSerializer

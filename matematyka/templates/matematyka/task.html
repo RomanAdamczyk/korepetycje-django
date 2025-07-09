@@ -1,112 +1,82 @@
-<!DOCTYPE html>
-<html lang="pl">
+{% extends 'base.html' %}
 
-<head>
-  <meta charset="UTF-8">
-  <title>Zadanie</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-    }
+{% block content %}
 
-    .section {
-      margin-bottom: 20px;
-    }
+<div class="task-content">
+    <!-- Tutaj trafia treść zadania -->
+    <div id="task-content">Ładowanie zadania…</div>
 
-    .section h2 {
-      margin-bottom: 10px;
-    }
+    <!-- Pojawi się tu formularz z odpowiedziami -->
+    <form method="post" id="answer-form">
+        <div class="row row-cols-1 row-cols-md-2 g-3" id="answers-container">
+            <!-- <div class="col">…</div> będzie dokładane przez JS -->
+        </div>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Zatwierdź</button>
+        </div>
+    </form>
 
-    ul {
-      padding-left: 20px;
-    }
-  </style>
-</head>
+</div>
 
-<body>
-
-  <h1>Rozwiązywanie zadania</h1>
-
-  <div id="issue-container">
-    <div class="section">
-      <h2>Treść zadania</h2>
-      <div id="task-content">Ładowanie...</div>
-    </div>
-
-    <div class="section">
-      <h2>Wykorzystane zmienne</h2>
-      <ul id="used-variables"></ul>
-    </div>
-
-    <div class="section">
-      <h2>Odpowiedzi</h2>
-      <ul id="answer-options"></ul>
-    </div>
-  </div>
-
-  <script>
+<script>
     document.addEventListener('DOMContentLoaded', () => {
-
-    const taskId = {{ issue.task.id }};
-    const taskContentDiv = document.getElementById('task-content');
-    const usedVariablesList = document.getElementById('used-variables');
-    const answerOptionsList = document.getElementById('answer-options');
+    const issueId = "{{ issue.id }}";
+    const taskId = "{{issue.task.id}}";
+    const taskDiv = document.getElementById('task-content');
+    const answersBox = document.getElementById('answers-container');
 
     fetch(`/api/tasks/${taskId}/start_original_variables/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCookie('csrftoken')
-      },
-      body: JSON.stringify({})
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({})
     })
-      .then(response => {
-        if (!response.ok) throw new Error(`Błąd sieci: ${response.status}`);
-        return response.json();
-      })
-      .then(data => {
-        // 1. Treść zadania
-        taskContentDiv.innerText = data.task.content;
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(data => {
+            // 1) Treść zadania
+            taskDiv.innerHTML = data.task.content;
 
-        // 2. Zmienne
-        usedVariablesList.innerHTML = '';
-        data.used_variables.forEach(uv => {
-          const li = document.createElement('li');
-          li.textContent = `${uv.variable_name} = ${uv.variable_value}`;
-          usedVariablesList.appendChild(li);
-        });
+            // 2) Odpowiedzi
+            answersBox.innerHTML = '';
+            data.answer_options.forEach((opt, idx) => {
+                const col = document.createElement('div');
+                col.className = 'col';
 
-        // 3. Odpowiedzi
-        answerOptionsList.innerHTML = '';
-        data.answer_options.forEach(opt => {
-          const li = document.createElement('li');
-          li.textContent = `${opt.content} (${opt.format})`;
-          answerOptionsList.appendChild(li);
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'answer';
+                radio.id = 'answer' + idx;
+                radio.value = opt.content;
+                radio.required = true;
+                radio.className = 'btn-check';
+
+                const label = document.createElement('label');
+                label.htmlFor = radio.id;
+                label.className = 'btn btn-outline-custom w-100 p-3 text-start';
+                label.innerHTML = opt.content;
+
+                col.appendChild(radio);
+                col.appendChild(label);
+                answersBox.appendChild(col);
+            });
+        })
+        .catch(err => {
+            taskDiv.innerText = 'Nie udało się załadować danych.';
+            console.error(err);
         });
-      })
-      .catch(err => {
-        taskContentDiv.innerText = 'Nie udało się załadować danych.';
-        console.error(err);
-      });
 });
 
-    // funkcja pobierająca CSRF z ciasteczka
+    // pobranie CSRF
     function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
+        let v = null;
         document.cookie.split(';').forEach(c => {
-          c = c.trim();
-          if (c.startsWith(name + '=')) {
-            cookieValue = decodeURIComponent(c.slice(name.length + 1));
-          }
+            c = c.trim();
+            if (c.startsWith(name + '=')) v = decodeURIComponent(c.slice(name.length + 1));
         });
-      }
-      return cookieValue;
+        return v;
     }
-  </script>
+</script>
 
-
-</body>
-
-</html>
+{% endblock %}

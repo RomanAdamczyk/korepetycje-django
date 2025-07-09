@@ -1,10 +1,12 @@
 from rest_framework import viewsets
-from django.db.models import Count, Prefetch
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
+
 from django.shortcuts import redirect
+from django.template import Template, Context
+from django.db.models import Count, Prefetch
 
 from ..models import Category, Task, Variable, AdditionalVariable, Issue, UsedVariable, AnswerOption
 from .serializers import CategorySerializer, IssueSerializer
@@ -38,11 +40,14 @@ class StartIssueOriginalVarables(APIView):
             try:
                 value = float(variable.original_value)
             except ValueError:
-                value = variable.original_value
-
-            value_map[variable.name] = value
+                formatted = variable.original_value
+            else:
+                if value.is_integer():
+                    formatted = str(int(value))
+                else:
+                    formatted = str(value)
+            value_map[variable.name] = formatted
             
-        
             UsedVariable.objects.create(
                 task=task,
                 issue=issue,
@@ -57,8 +62,11 @@ class StartIssueOriginalVarables(APIView):
             expr = sympify(add_var.formula)
             evaluated = expr.subs(value_map)
             numeric_result = round(float(N(evaluated)),4)  
-            
-            value_map[add_var.name] = numeric_result
+            if numeric_result.is_integer():
+                formatted = str(int(numeric_result))
+            else:
+                formatted = str(numeric_result)
+            value_map[add_var.name] = formatted            
             
             if add_var.save_result:
                 UsedVariable.objects.create(
@@ -75,7 +83,7 @@ class StartIssueOriginalVarables(APIView):
                 }
 
         answer_options_db = AnswerOption.objects.filter(task=task)
-        print("!!!!!!!!!!answer_options_db:", answer_options_db)
+
         answer_options = []
 
         for opt in answer_options_db:
@@ -93,19 +101,17 @@ class StartIssueOriginalVarables(APIView):
                     'is_correct': opt.is_correct,
                     'format': opt.display_format
                 })
-        print('ODPOWIEDZI')
-        print(answer_options)        
-        # serializer = IssueSerializer(issue)
-        # data = serializer.data
-        random.shuffle(answer_options)
-        # issue.answer_options = answer_options
-        serializer = IssueSerializer(issue, context={'answer_options': answer_options})
-        # serializer = IssueSerializer(issue)
-        data = serializer.data 
-        # data['answer_options'] = answer_options
-        return Response(data, status=status.HTTP_201_CREATED)
-        # return redirect('start-task', issue_id=issue.id)
 
+        random.shuffle(answer_options)
+
+        serializer = IssueSerializer(issue, context={'answer_options': answer_options})
+        data = serializer.data 
+
+        raw = task.content
+        tpl = Template(raw)
+        rendered_content = tpl.render(Context(value_map))
+        data['task']['content'] = rendered_content
+        return Response(data, status=status.HTTP_201_CREATED)
     
 class IssueDetailAPIView(generics.RetrieveAPIView):
     queryset = Issue.objects.all()

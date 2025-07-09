@@ -1,5 +1,5 @@
 import requests
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView, DetailView
 from .models import Task, Issue
 
@@ -37,5 +37,5 @@ class CategoryTasksView(TemplateView):
 #     context_object_name = 'issue'
 
 def start_task_view(request, issue_id):
-    issue = Issue.objects.get(id=issue_id)
+    issue = get_object_or_404(Issue, id=issue_id)
     return render(request, 'matematyka/task.html', {'issue': issue})

@@ -75,7 +75,7 @@ class StartIssueOriginalVarables(APIView):
                 }
 
         answer_options_db = AnswerOption.objects.filter(task=task)
-
+        print("!!!!!!!!!!answer_options_db:", answer_options_db)
         answer_options = []
 
         for opt in answer_options_db:
@@ -92,15 +92,21 @@ class StartIssueOriginalVarables(APIView):
                     'content': content,
                     'is_correct': opt.is_correct,
                     'format': opt.display_format
-                })        
-        serializer = IssueSerializer(issue)
-        data = serializer.data
+                })
+        print('ODPOWIEDZI')
+        print(answer_options)        
+        # serializer = IssueSerializer(issue)
+        # data = serializer.data
         random.shuffle(answer_options)
-        data['answer_options'] = answer_options
-        # return Response(data, status=status.HTTP_201_CREATED)
-        return redirect('start-task', issue_id=issue.id)
+        # issue.answer_options = answer_options
+        serializer = IssueSerializer(issue, context={'answer_options': answer_options})
+        # serializer = IssueSerializer(issue)
+        data = serializer.data 
+        # data['answer_options'] = answer_options
+        return Response(data, status=status.HTTP_201_CREATED)
+        # return redirect('start-task', issue_id=issue.id)
 
     
-class IssueDetailAPI(generics.RetrieveAPIView):
+class IssueDetailAPIView(generics.RetrieveAPIView):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer

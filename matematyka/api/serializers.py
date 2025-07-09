@@ -71,7 +71,8 @@ class IssueSerializer(serializers.ModelSerializer):
         fields = ['id', 'task', 'used_variables', 'answer_options']
 
     def get_answer_options(self, obj):
-        return getattr(obj, 'answer_options', [])
+        # return getattr(obj, 'answer_options', [])
+        return self.context.get('answer_options', [])
     
 class AnswerOptionSerializer(serializers.ModelSerializer):
     class Meta:
